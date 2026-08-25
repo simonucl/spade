@@ -1,10 +1,10 @@
 # Paper evaluation protocol ("Games" tables). ONE config, four benchmarks:
 #   AIME 2025/2026     Avg@32   temp 0.7 / top_p 0.8 / top_k 20
 #   GPQA-Diamond       Avg@10   Qwen3 TR protocol, via GEM
-#   LiveCodeBench-v6   Pass@1   full 175-problem release_v6 (2025-01..04), via GEM
+#   LiveCodeBench-v6   Pass@1   full 175-problem release_v6 (25.02..25.05), via GEM
 #   Reasoning-Gym      Avg@8    100-task hard split (4 categories), via GEM
 #
-# GPQA/LCB/RG run through spade.core.eval (GemEvaluator) — the same code path
+# GPQA/LCB/RG run through spade.core.eval (GemEvaluator), the same code path
 # used for the reported runs. LCB requires LCB_OFFICIAL_DIR + LCB_V6_JSONL.
 suites:
   aime:
@@ -24,14 +24,15 @@ suites:
       max_tokens: 8192
       max_concurrent: 64
     tasks:
-      # GPQA-Diamond — Avg@10 per the Qwen3 Tech Report ("we sample 10 times for
+      # GPQA-Diamond: Avg@10 per the Qwen3 Tech Report ("we sample 10 times for
       # each query and report the averaged accuracy"). episodes = 1980 = 10 x 198:
       # the evaluator seeds reset() with the episode index, so every Diamond
       # question is answered exactly 10 times.
       - { task_id: "mcq:GPQA-Diamond-official", episodes: 1980, seed: 42, temperature: 0.7, max_tokens: 16384 }
 
-      # LiveCodeBench-v6 — Pass@1 over the full 175-problem release_v6 dump
-      # (2025-01..2025-04), each problem exactly once, official lcb_runner harness
+      # LiveCodeBench-v6: Pass@1 over the full 175-problem release_v6 dump
+      # (25.02..25.05, per the Qwen3 model-card window), each problem exactly
+      # once, official lcb_runner harness
       # end to end. Requires LCB_OFFICIAL_DIR + LCB_V6_JSONL at runtime.
       - { task_id: "eval:LiveCodeBench-v6", episodes: 175, seed: 42, temperature: 0.7, max_tokens: 16384 }
 

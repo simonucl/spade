@@ -65,10 +65,17 @@ python -m eval_offline.run_offline_eval \
   --output-dir /path/to/results
 ```
 
-`games.yaml` covers AIME 2025/2026, GPQA-Diamond, LiveCodeBench-v6, and the
-four Reasoning-Gym categories. `tool_use.yaml` covers BFCL v4, tau2-bench, and
-ACEBench. Files beginning with `_` are component configurations used by
-those two public entry points.
+`games.yaml` is the paper's evaluation protocol:
+
+| Benchmark | Protocol |
+|---|---|
+| AIME 2025/2026 | Avg@32 |
+| GPQA-Diamond | Avg@10 |
+| LiveCodeBench-v6 | Pass@1, full 175-problem release_v6 |
+| Reasoning-Gym (4 categories) | Avg@8, 100-task hard split |
+
+`tool_use.yaml` covers BFCL v4, tau2-bench, and ACEBench. Files beginning with `_` are component configurations used by `tool_use.yaml`;
+`games.yaml` is fully self-contained.
 
 `tool_use.yaml` pins the BFCL model handle to the 4B checkpoint
 (`Qwen/Qwen3-4B-Instruct-2507-FC`). Set the `BFCL_MODEL_HANDLE` environment

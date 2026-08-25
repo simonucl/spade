@@ -3,10 +3,14 @@
 Reads the same YAML schema as eval_configs/gem_eval_*.yaml, builds an
 OfflineModelAdapter, calls GemEvaluator.evaluate_all, writes scores.json.
 
-Config:
+Config (either form):
     suites:
       gem:
-        config_path: eval_offline/configs/_games_gem.yaml
+        defaults: {...}      # inline gem_eval schema (preferred: single-file
+        tasks: [...]         # protocol, nothing hidden in an include)
+    suites:
+      gem:
+        config_path: path/to/gem_eval.yaml   # external include, still supported
 
 Output:
     <out>/scores.json   — flat metric dict (gem_eval/... keys)
@@ -46,8 +50,18 @@ def run(client, cfg: dict, out_dir: Path) -> dict[str, Any]:
     from spade.core.eval.gem_tasks import load_gem_eval_config
     from eval_offline.model_adapter_shim import OfflineModelAdapter
 
-    config_path = _resolve_config_path(cfg.get("config_path", ""))
-    logger.info("[gem] loading config from %s", config_path)
+    if cfg.get("tasks"):
+        # Inline form: the suite config IS the gem_eval schema. Materialise it
+        # to a temp file so the shared loader stays the single parsing path.
+        import tempfile, yaml as _yaml
+        inline = {"gem_eval": {k: cfg[k] for k in ("defaults", "tasks") if k in cfg}}
+        with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False) as tf:
+            _yaml.safe_dump(inline, tf)
+            config_path = Path(tf.name)
+        logger.info("[gem] using inline task config (%d tasks)", len(cfg["tasks"]))
+    else:
+        config_path = _resolve_config_path(cfg.get("config_path", ""))
+        logger.info("[gem] loading config from %s", config_path)
     defaults, task_specs = load_gem_eval_config(str(config_path))
 
     if not task_specs:

@@ -74,6 +74,16 @@ python -m eval_offline.run_offline_eval \
 | LiveCodeBench-v6 | Pass@1, full 175-problem release_v6 |
 | Reasoning-Gym (4 categories) | Avg@8, 100-task hard split |
 
+AIME, GPQA-Diamond and LiveCodeBench-v6 follow the official Qwen3 evaluation
+settings: sample counts per the [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388)
+(AIME Avg@32; GPQA Avg@10) and the non-thinking sampling parameters and benchmark
+versions from the Qwen3 model cards. Reasoning-Gym uses the per-task *hard*
+configurations of the [reasoning_gym paper](https://arxiv.org/abs/2505.24760)
+(Appendix A.3), as adopted by [ProRL](https://arxiv.org/abs/2505.24864), with the
+four-category rollup (Math / Algorithmic / Cognition / Logic) following
+[Golden Goose](https://arxiv.org/abs/2601.22975). We thank the authors of all
+four works for the protocols and reference numbers this evaluation builds on.
+
 `tool_use.yaml` covers BFCL v4, tau2-bench, and ACEBench. Files beginning with `_` are component configurations used by `tool_use.yaml`;
 `games.yaml` is fully self-contained.
 
